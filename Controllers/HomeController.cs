@@ -36,9 +36,33 @@ namespace AssignmentDay4MVC5.Controllers
         }
         public ActionResult CreateAccount(Account a)
         {
+            //This code is for Assignment4
+            /*
             context.Accounts.Add(a);
             context.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index");*/
+
+           /* if (a.AccountNumber < 0)
+            {
+                ModelState.AddModelError("AccountNumber", "Account  number cannot be negative");
+            }
+            if (string.IsNullOrEmpty(a.Name))
+            {
+                ModelState.AddModelError("Name", "Account holder's  name is required");
+            }
+            if ((a.CurrentBalance >= 1 && a.CurrentBalance < 500) || a.CurrentBalance < 0)
+            {
+                ModelState.AddModelError("CurrentBalance", "Minimum balance must be atleast 500");
+            }*/
+
+            if (ModelState.IsValid)
+            {
+                context.Accounts.Add(a);
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View("Create");
+
         }
         public ActionResult Edit(int? accno)
         {
@@ -63,6 +87,21 @@ namespace AssignmentDay4MVC5.Controllers
             context.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        public JsonResult CheckAccountNumber(int AccountNumber)
+        {
+            var acc = (from a in context.Accounts
+                       where a.AccountNumber == AccountNumber
+                       select a).SingleOrDefault();
+
+            if (acc == null)
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json("Account number " + AccountNumber + " already exists", JsonRequestBehavior.AllowGet);
+         }
+
+
 
         [ChildActionOnly]
         public ActionResult GetNews(string category)
